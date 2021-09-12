@@ -60,8 +60,11 @@
 					pacientes[vId] = paciente;
 				}
 				atualizarTabela();
-				limpaForm();
-				document.getElementById('form-paciente').submit()
+				
+				document.getElementById('form-paciente').submit();
+				
+				//limpaForm();
+				
 			}
 			
 			return paciente;
@@ -155,7 +158,7 @@
 			<div class="form-row">
 				<div class="form-group col-md-6">
 					<label for="nome">Nome Paciente:</label>
-					 <input type="text"class="form-control" id="nome" placeholder="Nome do Paciente"name="nome">
+					 <input type="text"class="form-control" id="nome" placeholder="Nome do Paciente" name="nome">
 				</div>
 				<div class="form-group col-md-3">
 					<label for="nome">Status:</label>

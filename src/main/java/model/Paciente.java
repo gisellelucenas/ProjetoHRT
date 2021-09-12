@@ -9,6 +9,7 @@ public class Paciente {
 	private String inicioCirurgia;
 	private String fimCirurgia;
 	private String saidaPrevista;
+	
 	public int getId() {
 		return id;
 	}
