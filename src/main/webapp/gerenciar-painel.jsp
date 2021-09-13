@@ -1,5 +1,13 @@
+<%@page import="model.Paciente"%>
+<%@page import="java.util.List"%>
+<%@page import="dao.PacienteDao"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="conexao.Conexao"%>
+<%@page import="java.sql.Connection"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,9 +43,9 @@
 			var vSaidaPrev = document.getElementById("saida-previsto").value;
 			
 
-			if (vLocal != '') {
-				vLocal = '(' + vLocal + ')';
-			}
+// 			if (vLocal != '') {
+// 				vLocal = '(' + vLocal + ')';
+// 			}
 
 			var save = confirm("Deseja Salvar as alterações?");
 			if (save) {
@@ -59,7 +67,7 @@
 				} else {
 					pacientes[vId] = paciente;
 				}
-				atualizarTabela();
+// 				atualizarTabela();
 				
 				document.getElementById('form-paciente').submit();
 				
@@ -72,16 +80,16 @@
 		}
 	 	
 	
-		function preparaEdicao(id) {
-			var p = pacientes[id];
+		function preparaEdicao(id, nome, status, local, iniPre, iniCir, fimCir, saida) {
+// 			var p = pacientes[id];como estamos pegando os valores do banco de dados agora ñ é necessario esse array
 			document.getElementById("id").value = id;
-			document.getElementById("nome").value = p.nome;
-			document.getElementById("status").value = p.status;
-			document.getElementById("local").value = p.local.replace("(","").replace(")","");
-			document.getElementById("inicio-previsto").value = p.iniPrevisto;
-			document.getElementById("inicio-cirurgia").value = p.iniCirurgia;
-			document.getElementById("fim-cirurgia").value = p.fimCirurgia;
-			document.getElementById("saida-previsto").value = p.saidaPrev;
+			document.getElementById("nome").value = nome;
+			document.getElementById("status").value = status;
+			document.getElementById("local").value = local.replace("(","").replace(")","");
+			document.getElementById("inicio-previsto").value = iniPre;
+			document.getElementById("inicio-cirurgia").value = iniCir;
+			document.getElementById("fim-cirurgia").value = fimCir;
+			document.getElementById("saida-previsto").value = saida;
 
 		}
 
@@ -110,27 +118,24 @@
 			}
 		}
 
-		function atualizarTabela() {
-			var tabela = "";
-
-			for (i in pacientes) {
-				var stts = status(pacientes[i].status);
-				tabela += '<tr onclick="preparaEdicao(' + i + ')">' 
-							+ '<td>'+ pacientes[i].nome + '</td>'
-							+ '<td style="background-color: '+stts.cor+';">'+ stts.label + pacientes[i].local + '</td>'
-							+ '<td>'+ pacientes[i].iniPrevisto + '</td>' 
-							+ '<td>'+ pacientes[i].iniCirurgia + '</td>'
-							+ '<td>'+ pacientes[i].fimCirurgia + '</td>' 
-							+ '<td>'+ pacientes[i].saidaPrev + '</td>' 
-						+ '</tr>';
-			}
-			
-		
-
-			document.getElementById("corpo-tabela").innerHTML = tabela;
-			localStorage.setItem('corpo-tabela', tabela);
-			localStorage.setItem('ls-tabela', JSON.stringify(pacientes));
-		}
+// 		function atualizarTabela() {
+// 			var tabela = "";
+// como vamos usar o banco de dados/ ñ é nessaria essa função atualizar tabela
+// 			for (i in pacientes) {
+// 				var stts = status(pacientes[i].status);
+// 				tabela += '<tr onclick="preparaEdicao(' + i + ')">' 
+// 							+ '<td>'+ pacientes[i].nome + '</td>'
+// 							+ '<td style="background-color: '+stts.cor+';">'+ stts.label + pacientes[i].local + '</td>'
+// 							+ '<td>'+ pacientes[i].iniPrevisto + '</td>' 
+// 							+ '<td>'+ pacientes[i].iniCirurgia + '</td>'
+// 							+ '<td>'+ pacientes[i].fimCirurgia + '</td>' 
+// 							+ '<td>'+ pacientes[i].saidaPrev + '</td>' 
+// 						+ '</tr>';
+// 			}		
+// 			document.getElementById("corpo-tabela").innerHTML = tabela;
+// 			localStorage.setItem('corpo-tabela', tabela);
+// 			localStorage.setItem('ls-tabela', JSON.stringify(pacientes));
+// 		}
 
 		function limpaForm() {
 			document.getElementById("id").value = '';
@@ -140,11 +145,13 @@
 		function apagar() {
 			var vId = document.getElementById("id").value;
 			if (vId != '') {
+				"asd"+vId
 				var save = confirm("Tem certeza que quer apagar esse registro?");
 				if (save) {
-					pacientes.splice(vId, 1);
-					atualizarTabela();
-					limpaForm();
+					window.location = "painelServlet?id="+vId+"&acao=apagar";
+// 					pacientes.splice(vId, 1);
+// 					atualizarTabela();
+// 					limpaForm();
 				}
 			}
 		}
@@ -196,6 +203,7 @@
 			<button type="button" class="btn btn-secondary" onclick="limpaForm()">Novo</button>
 			<button type="submit" class="btn btn-primary" onclick="gravar(event)">Gravar</button>
 			<button type="button" class="btn btn-danger" onclick="apagar()">Apagar</button>
+<!-- 				<a class="btn btn-danger" onclick="apagar()" href="">Apagar</a> -->
 		</form>
 
 		<br>
@@ -211,13 +219,34 @@
 				</tr>
 			</thead>
 			<tbody id="corpo-tabela" style="cursor: pointer;">
+			<%			
+				PacienteDao objDao = new PacienteDao();
+				List<Paciente> ls = objDao.listaPaciente();
+				if (ls.size() > 0) {
+				
+					for(Paciente ps : ls){	
+			%>
+					<tr onclick="preparaEdicao(<%=ps.getId() %>, '<%=ps.getNome() %>', '<%=ps.getStatus() %>', '<%=ps.getLocal() %>', '<%=ps.getInicioPrevisto()%>', '<%=ps.getInicioCirurgia()%>', '<%=ps.getFimCirurgia()%>', '<%=ps.getSaidaPrevista()%>')">
+						<td><%=ps.getNome() %></td>
+						<td><%=ps.getStatus()+" ("+ps.getLocal()+")" %></td>
+						<td><%=ps.getInicioPrevisto()%></td>
+						<td><%=ps.getInicioCirurgia()%></td>
+						<td><%=ps.getFimCirurgia()%></td>
+						<td><%=ps.getSaidaPrevista()%></td>			
+					</tr>
+			<%
+					}
+				
+				}
+			%>
+			
 
 			</tbody>
 		</table>
 
 		<script type="text/javascript">
-			var tabela = localStorage.getItem('corpo-tabela');
-			document.getElementById("corpo-tabela").innerHTML = tabela;
+// 			var tabela = localStorage.getItem('corpo-tabela');
+// 			document.getElementById("corpo-tabela").innerHTML = tabela;
 		</script>
 
 	</div>
