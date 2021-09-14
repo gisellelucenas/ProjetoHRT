@@ -69,10 +69,10 @@
 				}
 // 				atualizarTabela();
 				
-				document.getElementById('form-paciente').submit();
+					document.getElementById('form-paciente').submit();
 				
 				//limpaForm();
-				
+			
 			}
 			
 			return paciente;
@@ -228,7 +228,7 @@
 			%>
 					<tr onclick="preparaEdicao(<%=ps.getId() %>, '<%=ps.getNome() %>', '<%=ps.getStatus() %>', '<%=ps.getLocal() %>', '<%=ps.getInicioPrevisto()%>', '<%=ps.getInicioCirurgia()%>', '<%=ps.getFimCirurgia()%>', '<%=ps.getSaidaPrevista()%>')">
 						<td><%=ps.getNome() %></td>
-						<td><%=ps.getStatus()+" ("+ps.getLocal()+")" %></td>
+						<td style="background-color: <%=ps.corStatus()%>"> <%=ps.getStatus()+" ("+ps.getLocal()+")"%></td>
 						<td><%=ps.getInicioPrevisto()%></td>
 						<td><%=ps.getInicioCirurgia()%></td>
 						<td><%=ps.getFimCirurgia()%></td>
